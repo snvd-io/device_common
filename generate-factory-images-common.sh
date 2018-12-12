@@ -90,6 +90,10 @@ then
   fi
 fi
 cp -r tmp/VENDOR/firmware/$GSCFIRMWARESRC/* tmp/$PRODUCT-$VERSION
+if test "$AVB_PKMD" != ""
+then
+  cp "$AVB_PKMD" tmp/$PRODUCT-$VERSION/avb_pkmd.bin
+fi
 
 # Write flash-all.sh
 cat > tmp/$PRODUCT-$VERSION/flash-all.sh << EOF
@@ -165,6 +169,15 @@ fastboot reboot-bootloader
 sleep $SLEEPDURATION
 EOF
 fi
+if test "$AVB_PKMD" != ""
+then
+cat >> tmp/$PRODUCT-$VERSION/flash-all.sh << EOF
+fastboot erase avb_custom_key
+fastboot flash avb_custom_key avb_pkmd.bin
+fastboot reboot-bootloader
+sleep $SLEEPDURATION
+EOF
+fi
 cat >> tmp/$PRODUCT-$VERSION/flash-all.sh << EOF
 fastboot -w update image-$PRODUCT-$VERSION.zip
 EOF
@@ -236,6 +249,15 @@ if test "$CDMARADIO" != ""
 then
 cat >> tmp/$PRODUCT-$VERSION/flash-all.bat << EOF
 fastboot flash radio-cdma radio-cdma-$DEVICE-$CDMARADIO.img
+fastboot reboot-bootloader
+ping -n $SLEEPDURATION 127.0.0.1 >nul
+EOF
+fi
+if test "$AVB_PKMD" != ""
+then
+cat >> tmp/$PRODUCT-$VERSION/flash-all.bat << EOF
+fastboot erase avb_custom_key
+fastboot flash avb_custom_key avb_pkmd.bin
 fastboot reboot-bootloader
 ping -n $SLEEPDURATION 127.0.0.1 >nul
 EOF
