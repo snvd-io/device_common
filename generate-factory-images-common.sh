@@ -169,7 +169,7 @@ fastboot flash avb_custom_key avb_pkmd.bin
 EOF
 fi
 cat >> tmp/$PRODUCT-$VERSION/flash-all.sh << EOF
-fastboot -w update image-$PRODUCT-$VERSION.zip
+fastboot -w --skip-reboot update image-$PRODUCT-$VERSION.zip
 EOF
 chmod a+x tmp/$PRODUCT-$VERSION/flash-all.sh
 
@@ -251,7 +251,7 @@ fastboot flash avb_custom_key avb_pkmd.bin
 EOF
 fi
 cat >> tmp/$PRODUCT-$VERSION/flash-all.bat << EOF
-fastboot -w update image-$PRODUCT-$VERSION.zip
+fastboot -w --skip-reboot update image-$PRODUCT-$VERSION.zip
 
 echo Press any key to exit...
 pause >nul
