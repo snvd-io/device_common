@@ -210,6 +210,7 @@ fastboot erase fips
 EOF
 fi
 cat >> tmp/$PRODUCT-$VERSION/flash-all.sh << EOF
+fastboot snapshot-update cancel
 fastboot -w --skip-reboot update image-$PRODUCT-$VERSION.zip
 fastboot reboot-bootloader
 sleep $SLEEPDURATION
@@ -345,6 +346,7 @@ fastboot erase fips
 EOF
 fi
 cat >> tmp/$PRODUCT-$VERSION/flash-all.bat << EOF
+fastboot snapshot-update cancel
 fastboot -w --skip-reboot update image-$PRODUCT-$VERSION.zip
 fastboot reboot-bootloader
 ping -n $SLEEPDURATION 127.0.0.1 >nul
