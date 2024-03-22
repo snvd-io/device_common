@@ -141,7 +141,7 @@ if ! command -v fastboot > /dev/null; then
   exit 1
 fi
 
-if ! [ \$("\$(which fastboot)" --version | grep "version" | cut -c18-23 | sed 's/\.//g' ) -ge 3404 ]; then
+if ! [ \$("\$(which fastboot)" --version | grep "version" | cut -c18-23 | sed 's/\.//g' ) -ge 3405 ]; then
   echo "fastboot too old; please download the latest version at https://developer.android.com/studio/releases/platform-tools.html"
   exit 1
 fi
@@ -313,7 +313,7 @@ where /q fastboot || ECHO fastboot not found; please download the latest version
 try { ^
     \$verNum = \$version[0].substring(17, 6); ^
     \$verNum = \$verNum.replace('.', ''); ^
-    if ((-Not (\$verNum -ge 3404)) -Or (-Not (\$verNum -match '^[\d.]+$'))) { ^
+    if ((-Not (\$verNum -ge 3405)) -Or (-Not (\$verNum -match '^[\d.]+$'))) { ^
         Exit 1 ^
     } ^
 } catch { ^
