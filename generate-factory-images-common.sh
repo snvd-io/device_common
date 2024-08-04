@@ -138,7 +138,7 @@ if ! [ \$("\$(which fastboot)" --version | grep "version" | cut -c18-23 | sed 's
   exit 1
 fi
 
-product=\$(fastboot getvar product 2>&1 | head -1 | cut -d ' ' -f 2)
+product=\$(fastboot getvar product 2>&1 | grep "product:" | cut -d ' ' -f 2)
 if ! [ \$product = $DEVICE ]; then
   echo "You're attempting to flash the wrong factory images. This would likely brick your device."
   echo
