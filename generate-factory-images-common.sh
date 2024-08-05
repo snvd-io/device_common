@@ -140,6 +140,9 @@ if ! [ \$("\$(which fastboot)" --version | grep "version" | cut -c18-23 | sed 's
   exit 1
 fi
 
+# PROLOG_END
+# The above line is used by FlashCapturer in fastboot
+
 product=\$(fastboot getvar product 2>&1 | grep "product:" | cut -d ' ' -f 2)
 if ! [ \$product = $DEVICE ]; then
   echo "You're attempting to flash the wrong factory images. This would likely brick your device."
@@ -315,6 +318,9 @@ IF %ERRORLEVEL% NEQ 0 (
   ECHO fastboot too old; please download the latest version at https://developer.android.com/studio/releases/platform-tools.html
   EXIT /B
 )
+
+:: PROLOG_END
+:: The above line is used by FlashCapturer in fastboot
 
 for /f "tokens=2" %%a in ('fastboot getvar product 2^>^&1 ^| findstr /i /c:"product:"') do (
   set "product=%%a"
