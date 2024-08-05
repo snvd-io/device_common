@@ -300,7 +300,15 @@ PATH=%PATH%;"%SYSTEMROOT%\System32"
 :: Detect Fastboot version with inline PowerShell
 :: Should work with Windows 7 and later
 
-where /q fastboot || ECHO fastboot not found; please download the latest version at https://developer.android.com/studio/releases/platform-tools.html and add it to the shell PATH && EXIT /B
+where /q fastboot
+if %errorlevel% neq 0 (
+  echo fastboot not found
+  echo Download the latest version at https://developer.android.com/studio/releases/platform-tools.html and add it to the shell PATH
+  call:pakExit
+)
+
+:: call:pakExit above jumps to the wrong line without this rem because of the PowerShell block below
+rem
 
 @PowerShell ^
 \$version=fastboot --version; ^
@@ -314,9 +322,10 @@ try { ^
     Exit 1 ^
 }
 
-IF %ERRORLEVEL% NEQ 0 (
-  ECHO fastboot too old; please download the latest version at https://developer.android.com/studio/releases/platform-tools.html
-  EXIT /B
+if %errorlevel% neq 0 (
+  echo fastboot version is too old
+  echo Download the latest version at https://developer.android.com/studio/releases/platform-tools.html
+  call:pakExit
 )
 
 :: PROLOG_END
@@ -329,8 +338,7 @@ for /f "tokens=2" %%a in ('fastboot getvar product 2^>^&1 ^| findstr /i /c:"prod
 if not "%product%" == "$DEVICE" (
   echo You're attempting to flash the wrong factory images. This would likely brick your device.
   echo These factory images are for $DEVICE and the detected device is %product%.
-  pause
-  exit /b 1
+  call:pakExit
 )
 EOF
 if test "$UNLOCKBOOTLOADER" = "true"
@@ -434,6 +442,9 @@ fastboot -w --skip-reboot update image-$PRODUCT-$VERSION.zip
 fastboot reboot-bootloader
 ping -n $SLEEPDURATION 127.0.0.1 >nul
 
+call:pakExit
+
+:pakExit
 echo Press any key to exit...
 pause >nul
 exit
