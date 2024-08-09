@@ -87,7 +87,7 @@ then
   cp "$AVB_PKMD" tmp/$PRODUCT-$VERSION/avb_pkmd.bin
 fi
 
-MIN_FASTBOOT_VERSION_STR="33.0.1"
+MIN_FASTBOOT_VERSION_STR="35.0.1"
 MIN_FASTBOOT_VERSION_NUM=$(echo $MIN_FASTBOOT_VERSION_STR | tr -d .)
 
 # Write flash-all.sh
