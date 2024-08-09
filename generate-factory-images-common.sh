@@ -87,6 +87,9 @@ then
   cp "$AVB_PKMD" tmp/$PRODUCT-$VERSION/avb_pkmd.bin
 fi
 
+MIN_FASTBOOT_VERSION_STR="34.0.5"
+MIN_FASTBOOT_VERSION_NUM=${MIN_FASTBOOT_VERSION_STR//.}
+
 # Write flash-all.sh
 cat > tmp/$PRODUCT-$VERSION/flash-all.sh << EOF
 #!/bin/sh
@@ -129,14 +132,18 @@ cat > tmp/$PRODUCT-$VERSION/flash-all.sh << EOF
 # limitations under the License.
 
 if ! command -v fastboot > /dev/null; then
-  echo "fastboot not found; please download the latest version at https://developer.android.com/studio/releases/platform-tools.html and add it to the shell PATH"
+  echo "fastboot not found"
+  echo "Download the latest version at https://developer.android.com/studio/releases/platform-tools.html and add it to the shell PATH"
   exit 1
 fi
 
 set -e
 
-if ! [ \$("\$(which fastboot)" --version | grep "version" | cut -c18-23 | sed 's/\.//g' ) -ge 3405 ]; then
-  echo "fastboot too old; please download the latest version at https://developer.android.com/studio/releases/platform-tools.html"
+FASTBOOT_VERSION_STR=\$(fastboot --version | grep "fastboot version " | cut -c18-23)
+FASTBOOT_VERSION_NUM=\${FASTBOOT_VERSION_STR//.}
+if ! [ \$FASTBOOT_VERSION_NUM -ge $MIN_FASTBOOT_VERSION_NUM ]; then
+  echo "fastboot version (\$FASTBOOT_VERSION_STR) is older than the minimum supported version ($MIN_FASTBOOT_VERSION_STR)."
+  echo "Download the latest version at https://developer.android.com/studio/releases/platform-tools.html and add it to the shell PATH"
   exit 1
 fi
 
@@ -297,9 +304,6 @@ cat > tmp/$PRODUCT-$VERSION/flash-all.bat << EOF
 
 PATH=%PATH%;"%SYSTEMROOT%\System32"
 
-:: Detect Fastboot version with inline PowerShell
-:: Should work with Windows 7 and later
-
 where /q fastboot
 if %errorlevel% neq 0 (
   echo fastboot not found
@@ -307,25 +311,20 @@ if %errorlevel% neq 0 (
   call:pakExit
 )
 
-:: call:pakExit above jumps to the wrong line without this rem because of the PowerShell block below
-rem
+:: needed for variable operations inside the fastboot version loop
+setlocal EnableDelayedExpansion
 
-@PowerShell ^
-\$version=fastboot --version; ^
-try { ^
-    \$verNum = \$version[0].substring(17, 6); ^
-    \$verNum = \$verNum.replace('.', ''); ^
-    if ((-Not (\$verNum -ge 3405)) -Or (-Not (\$verNum -match '^[\d.]+$'))) { ^
-        Exit 1 ^
-    } ^
-} catch { ^
-    Exit 1 ^
-}
-
-if %errorlevel% neq 0 (
-  echo fastboot version is too old
-  echo Download the latest version at https://developer.android.com/studio/releases/platform-tools.html
-  call:pakExit
+for /f "tokens=3" %%a in ('fastboot --version ^| find "fastboot version "') do (
+  set full_ver_str=%%a
+:: substring first 6 chars
+  set ver_str=!full_ver_str:~0,6!
+:: remove dots
+  set ver_num=!ver_str:.=!
+  if not !ver_num! geq $MIN_FASTBOOT_VERSION_NUM (
+    echo fastboot version ^(!ver_str!^) is older than the minimum supported version ^($MIN_FASTBOOT_VERSION_STR^).
+    echo Download the latest version at https://developer.android.com/studio/releases/platform-tools.html and add it to the shell PATH
+    call:pakExit
+  )
 )
 
 :: PROLOG_END
