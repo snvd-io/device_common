@@ -57,7 +57,7 @@ then
 fi
 
 # Extract the GSC firmware
-unzip -d tmp ${SRCPREFIX}$PRODUCT-target_files-$BUILD.zip VENDOR/firmware/$GSCFIRMWARESRC/*
+unzip -d tmp ${SRCPREFIX}$PRODUCT-target_files.zip VENDOR/firmware/$GSCFIRMWARESRC/*
 
 # Copy the various images in their staging location
 cp ${SRCPREFIX}$PRODUCT-img-$BUILD.zip tmp/$PRODUCT-$VERSION/image-$PRODUCT-$VERSION.zip
