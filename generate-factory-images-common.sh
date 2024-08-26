@@ -88,7 +88,7 @@ then
 fi
 
 MIN_FASTBOOT_VERSION_STR="35.0.1"
-MIN_FASTBOOT_VERSION_NUM=${MIN_FASTBOOT_VERSION_STR//.}
+MIN_FASTBOOT_VERSION_NUM=$(echo $MIN_FASTBOOT_VERSION_STR | tr -d .)
 
 # Write flash-all.sh
 cat > tmp/$PRODUCT-$VERSION/flash-all.sh << EOF
@@ -140,7 +140,7 @@ fi
 set -e
 
 FASTBOOT_VERSION_STR=\$(fastboot --version | grep "fastboot version " | cut -c18-23)
-FASTBOOT_VERSION_NUM=\${FASTBOOT_VERSION_STR//.}
+FASTBOOT_VERSION_NUM=\$(echo \$FASTBOOT_VERSION_STR | tr -d .)
 if ! [ \$FASTBOOT_VERSION_NUM -ge $MIN_FASTBOOT_VERSION_NUM ]; then
   echo "fastboot version (\$FASTBOOT_VERSION_STR) is older than the minimum supported version ($MIN_FASTBOOT_VERSION_STR)."
   echo "Download the latest version at https://developer.android.com/studio/releases/platform-tools.html and add it to the shell PATH"
